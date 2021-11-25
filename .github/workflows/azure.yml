@@ -5,12 +5,12 @@ on:
 
 # Environment variables available to all jobs and steps in this workflow
 env:
-  REGISTRY_NAME: team7dou
-  CLUSTER_NAME: cluster1
-  CLUSTER_RESOURCE_GROUP: juan-baas
+  REGISTRY_NAME: team7acr
+  CLUSTER_NAME: aks-default-37875945-vmss000000
+  CLUSTER_RESOURCE_GROUP: team7
   NAMESPACE: default
   SECRET: opswd
-  APP_NAME: online-shop
+  APP_NAME: online-shopping-system-advanced_web
   
 jobs:
   build:
@@ -29,17 +29,21 @@ jobs:
       uses: actions/checkout@master
     - name: Fetch all history for all tags and branches
       run: git fetch --prune --unshallow
-    - name: Cloning Dockerfile repo
-      run: git clone https://github.com/juanbaas/onlineshop-docker.git
-    - name: Showing entrypoint
-      run: cat online-shop-docker/docker-entrypoint.sh
+    #- name: Cloning Dockerfile repo
+    #  run: git clone https://github.com/juanbaas/onlineshop-docker.git
+    #- name: Showing entrypoint
+    # run: cat online-shop-docker/docker-entrypoint.sh
 
     # Container build and push to a Azure Container Registry (ACR)
     - name: Container build and push to a Azure Container Registry (ACR)
       run: |
-        cd onlineshop-docker
-        docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
+        cd app
+        #docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
+        #docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
+        docker compose up -d
+        docker tag online-shopping-system-advanced_web ${{env.REGISTRY_NAME}}/online-shopping-system-advanced_web
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
+        
     
     # Set the target Azure Kubernetes Service (AKS) cluster. 
     - name: Set the target Azure Kubernetes Service (AKS) cluster
@@ -60,15 +64,15 @@ jobs:
         namespace: ${{ env.NAMESPACE }}
         force: true
     
-    - name: Deploying image to AKS cluster
-      uses: azure/k8s-deploy@v1
-      with:
-        manifests: |
-          deployment.yml
-          service.yml
-        images: |
-          ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
-          #${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:latest
-        imagepullsecrets: |
-          ${{ env.SECRET }}
-        namespace: ${{ env.NAMESPACE }}
+   # - name: Deploying image to AKS cluster
+    #  uses: azure/k8s-deploy@v1
+    #  with:
+    #    manifests: |
+    #      deployment.yml
+    #      service.yml
+    #    images: |
+    #      ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
+    #      #${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:latest
+    #    imagepullsecrets: |
+    #      ${{ env.SECRET }}
+    #    namespace: ${{ env.NAMESPACE }}
