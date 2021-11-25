@@ -21,11 +21,11 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
           
-       - uses: actions/checkout@v2
-       - name: Build the stack
-         run: docker-compose up -d
-       - name: Test
-         run: | 
+      - name: Build the stack
+      - uses: actions/checkout@v2
+      - run: docker-compose up -d
+      - name: Test
+      - run: | 
           docker run --network container:online-shopping-system-advanced_web 
           docker push team7acr.azurecr.io/appdb:${{ github.sha }}
       #- run: |
