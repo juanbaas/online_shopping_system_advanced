@@ -28,6 +28,4 @@ jobs:
       - run: | 
           docker run --network container:online-shopping-system-advanced_web 
           docker push team7acr.azurecr.io/appdb:${{ github.sha }}
-      #- run: |
-       #   docker build . -t yourACRname.azurecr.io/appdb:${{ github.sha }}
-#          docker push yourACRn.azurecr.io/appdb:${{ github.sha }}
+
