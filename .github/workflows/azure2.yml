@@ -23,6 +23,7 @@ jobs:
           
       - name: Build the stack
       - uses: actions/checkout@v2
+      - name: create images
       - run: docker-compose up -d
       - name: Test
       - run: | 
